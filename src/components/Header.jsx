@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/menubar"
 import { SignedIn, UserButton, SignInButton,SignedOut } from "@clerk/nextjs";
 import { auth, currentUser } from '@clerk/nextjs/server';
-
+import { BicepsFlexed } from "lucide-react";
 
 const Header = async ({toggler}) => {
     const {userId} = await auth()
@@ -13,7 +13,7 @@ const Header = async ({toggler}) => {
         <Menubar className="flex bg-neutral-900 text-gray-100 items-center h-12 justify-between w-full">  
             {!userId?"":<MenubarMenu>{toggler}</MenubarMenu>}
             <MenubarMenu>
-                <MenubarTrigger className="text-xl font-bold">jimBro</MenubarTrigger>
+                <MenubarTrigger className="text-xl text-neutral-300 font-bold ml-1"><span className="p-1"><BicepsFlexed/></span>jimBro</MenubarTrigger>
             </MenubarMenu>
             <MenubarMenu>
                 {userId?<SignedIn><UserButton/></SignedIn>:<SignedOut><SignInButton className="bg-white rounded-full py-1 px-3 text-black"/></SignedOut>}

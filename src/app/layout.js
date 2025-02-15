@@ -5,11 +5,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import Header from '@/components/Header';
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
 } from '@clerk/nextjs';
 
 const inter = Inter({ subset: "latin" })
