@@ -21,6 +21,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    <ClerkProvider>
     <html lang="en">
       <body
         className={`${inter.className} antialiased`}
@@ -29,7 +30,7 @@ export default function RootLayout({ children }) {
         <div className="flex h-screen w-full overflow-hidden">
           <AppSidebar />
           <div className="flex flex-col flex-grow w-full">
-          <Header toggler={<SidebarTrigger/>} className="w-full"/>
+              <Header toggler={<SidebarTrigger/>} className="w-full"/>
           <main className="bg-neutral-900 border border-neutral-800 flex-grow p-4 w-full overflow-x-hidden"> 
             {children}
           </main>
@@ -38,5 +39,6 @@ export default function RootLayout({ children }) {
         </SidebarProvider>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

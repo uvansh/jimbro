@@ -1,6 +1,6 @@
 'use client'
 
-import { Calendar, Home, ChefHat, ChartLine, ClipboardList, Settings, LucideOctagon } from "lucide-react"
+import { Calendar, Home, ChefHat, ChartLine, ClipboardList, Settings } from "lucide-react"
 
 import {
   Sidebar,
@@ -14,7 +14,7 @@ import {
   SidebarFooter
 } from "@/components/ui/sidebar"
 
-import { useSidebar } from "@/components/ui/sidebar"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 // Menu items.
 const items = [
@@ -51,18 +51,8 @@ const items = [
 ]
 
 export function AppSidebar() {
-  const {
-    state,
-    open,
-    setOpen,
-    openMobile,
-    setOpenMobile,
-    isMobile,
-    toggleSidebar,
-  } = useSidebar()
-  console.log(isMobile)
   return (
-    <Sidebar collapsible={isMobile?"":"none"} className="h-screen border border-neutral-800">
+    <Sidebar collapsible={useIsMobile()?"":"none"} className="h-screen border border-neutral-800">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Logo.</SidebarGroupLabel>
