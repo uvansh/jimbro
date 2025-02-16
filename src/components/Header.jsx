@@ -8,10 +8,11 @@ import { auth } from '@clerk/nextjs/server';
 import { BicepsFlexed } from "lucide-react";
 
 const Header = async ({toggler}) => {
-    const {userId} = await auth()
+    
+    const {userId} = await auth();
     return (
         <Menubar className="flex bg-neutral-900 text-gray-100 items-center h-12 justify-between w-full">  
-            {!userId?"":<MenubarMenu>{toggler}</MenubarMenu>}
+        <MenubarMenu>{!userId?"":toggler}</MenubarMenu>
             <MenubarMenu>
                 <MenubarTrigger className="text-xl text-neutral-300 font-bold ml-1"><span className="p-1"><BicepsFlexed/></span>jimBro</MenubarTrigger>
             </MenubarMenu>

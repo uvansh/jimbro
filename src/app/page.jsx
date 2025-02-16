@@ -43,8 +43,8 @@ export default async function Home() {
   // Use `user` to render user details or create UI elements
   return (
     <div className="font-bold text-2xl text-neutral-100">
-      Welcome, <span className='text-red-400'>{user.firstName}!</span> 
-      <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">You have <span className="text-red-400 px-1">{DaysLeft}</span> days left</div>
+      Welcome, <span className='text-green-400'>{user.firstName}!</span> 
+      <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">You have <span className="text-green-400 px-1">{DaysLeft}</span> days left</div>
       <div className='container mx-auto flex justify-center'>
         <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4 w-full mt-10'>
           {cards.map((card)=>(

@@ -51,8 +51,11 @@ const items = [
 ]
 
 export function AppSidebar() {
+  async function getDeviceInfo(){
+    await useIsMobile();
+  }
   return (
-    <Sidebar collapsible={useIsMobile()?"":"none"} className="h-screen border border-neutral-800">
+    <Sidebar collapsible={getDeviceInfo?"":"none"} className="h-screen border border-neutral-800">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-2xl font-bold mb-10 mt-5"><span className="p-1"><BicepsFlexed/></span>jimBro</SidebarGroupLabel>
