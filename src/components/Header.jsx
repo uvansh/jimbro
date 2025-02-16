@@ -4,7 +4,7 @@ import {
     MenubarTrigger,
 } from "@/components/ui/menubar"
 import { SignedIn, UserButton, SignInButton,SignedOut } from "@clerk/nextjs";
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { BicepsFlexed } from "lucide-react";
 
 const Header = async ({toggler}) => {
@@ -16,7 +16,7 @@ const Header = async ({toggler}) => {
                 <MenubarTrigger className="text-xl text-neutral-300 font-bold ml-1"><span className="p-1"><BicepsFlexed/></span>jimBro</MenubarTrigger>
             </MenubarMenu>
             <MenubarMenu>
-                {userId?<SignedIn><UserButton/></SignedIn>:<SignedOut><SignInButton className="bg-white rounded-full py-1 px-3 text-black"/></SignedOut>}
+                <span className="mx-2">{userId?<SignedIn><UserButton/></SignedIn>:<SignedOut><SignInButton className="bg-white rounded-full py-1 px-3 text-black"/></SignedOut>}</span>
             </MenubarMenu>
         </Menubar>
     )

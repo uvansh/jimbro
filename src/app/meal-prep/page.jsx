@@ -81,3 +81,36 @@ export default function MealPreparation(data) {
     </div>
   )
 }
+
+// 'use client'
+// import {Card,CardHeader,CardContent,CardDescription,CardTitle} from '@/components/ui/card';
+// import {Input} from '@/components/ui/input'
+// import {Button} from '@/components/ui/button'
+
+// const AskAi = () =>{
+
+//     function onSubmit(){
+//         console.log("Form submitted");
+//     }
+//     return(
+//         <div className="text-white">
+//             <h1 className="text-3xl font-bold">Ask AI</h1>
+//             <Card>
+//                 <CardHeader>
+//                     <CardTitle>Ask AI</CardTitle>
+//                     <CardDescription>Ask AI anything</CardDescription>
+//                 </CardHeader>
+//                 <CardContent>
+//                     <form onSubmit={onSubmit}>
+//                         <Input className="my-2" type='text' name="protein-intake" placeholder='Protein Intake'/>
+//                         <Input className="my-2" type="number" name="calories-required" placeholder='Calories Required'/>
+//                         <Input className="my-2" type="text" name="diet-type" placeholder='Diet Type'/>
+//                         <Input className="my-2" type="text" name="location" placeholder='Location'/>
+//                         <Button type="submit">Submit</Button>
+//                     </form>
+//                 </CardContent>
+//             </Card>
+//         </div>
+//     )
+// }
+// export default AskAi;
