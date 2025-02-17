@@ -1,8 +1,7 @@
 import {auth, currentUser} from '@clerk/nextjs/server'
 import {Card,CardDescription,CardContent,CardHeader,CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
-import { BrainCircuit, SeparatorHorizontal } from 'lucide-react';
-import Image from 'next/image';
+import { BrainCircuit } from 'lucide-react';
 export default async function Home() {
   const { userId } = await auth()
   const user = await currentUser()
@@ -43,9 +42,9 @@ export default async function Home() {
   // Use `user` to render user details or create UI elements
   return (
     <div className="font-bold text-2xl text-neutral-100">
-      Welcome, <span className='text-green-400'>{user.firstName}!</span> 
-      <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">You have <span className="text-green-400 px-1">{DaysLeft}</span> days left</div>
-      <div className='container mx-auto flex justify-center'>
+      <h1 className='text-3xl'>Welcome, <span className='text-green-400'>{user.firstName}!</span></h1> 
+      <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">This year has<span className="text-green-400 px-1">{DaysLeft}</span> days left</div>
+      <div className='mx-auto flex justify-center'>
         <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4 w-full mt-10'>
           {cards.map((card)=>(
             <Card key={card.id}>

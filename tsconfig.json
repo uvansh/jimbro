@@ -31,7 +31,7 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx", "src/app/settings/page.jsx", "src/middleware.ts",
+    "**/*.tsx", "src/app/settings/page.jsx", "src/middleware.ts", "src/chartConfig.js",
   ],
   "exclude": [
     "node_modules"

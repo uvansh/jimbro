@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
           <AppSidebar />
           <div className="flex flex-col flex-grow w-full">
               <Header toggler={<SidebarTrigger/>} className="w-full"/>
-          <main className="bg-neutral-900 border border-neutral-800 flex-grow p-4 w-full overflow-x-hidden"> 
+          <main className=" border border-neutral-800 flex-grow p-4 w-full overflow-x-hidden"> 
             {children}
           </main>
           </div>
