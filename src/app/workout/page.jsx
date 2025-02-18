@@ -1,3 +1,4 @@
+'use client'
 import {Card,CardDescription,CardHeader,CardTitle,CardContent} from '@/components/ui/card';
 import {Button} from "@/components/ui/button";
 import { 
@@ -7,6 +8,8 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 const fieldData = [
     {
@@ -59,6 +62,19 @@ const fieldData = [
     }
 ]
 const WorkOut = () =>{
+    const [isClicked,setIsClicked] = useState(false)
+    useEffect(async ()=>{
+        const res = await fetch("https://api.api-ninjas.com/v1/exercises?type=cardio&difficulty=beginner&limit=10",
+        {
+            headers:{
+                "X-Api-Key":"2LVGvRBZjPl/9S3LoHAudA==BUjIzQMSgjaCVU1G"
+            }
+        })
+    },
+    [isClicked]);
+    function handleClick(){
+        setIsClicked(prevVal=>!prevVal);
+    }
     return(
         <div className="text-white flex justify-center w-full">
             <div className='mt-5 w-full flex flex-col justify-center items-center'>
@@ -74,12 +90,12 @@ const WorkOut = () =>{
             <CardContent>
                 <div>
                     <form>
-                        {fieldData.map((field,index)=><div className="my-2">
+                        {fieldData.map((field)=><div className="my-2">
                             <Select key={field.id}>
                             <SelectTrigger className="w-[180px]">
                               <SelectValue placeholder={field.placeHolder} />
                             </SelectTrigger>
-                            <SelectContent key={index} >
+                            <SelectContent key={field.id} >
                               {field.options.map((option,index)=>(<SelectItem className="my-1" key={index} value={option}>{option}</SelectItem>))}
                             </SelectContent>
                           </Select></div>                       
@@ -89,6 +105,7 @@ const WorkOut = () =>{
                 </div>
             </CardContent>
             </Card>
+            <button onClick={handleClick}>Click me</button>
         </div></div>
     )
 }

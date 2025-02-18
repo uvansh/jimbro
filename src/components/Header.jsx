@@ -17,8 +17,7 @@ const Header = ({ toggler }) => {
 
     useEffect(() => {
         if (isLoaded) {
-            const timeout = setTimeout(() => setIsLoading(false), 700);
-            return () => clearTimeout(timeout);
+            setIsLoading(false)
         }
     }, [isLoaded])
 

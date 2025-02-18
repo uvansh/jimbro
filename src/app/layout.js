@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.className} antialiased`}
       >
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={true}>
         <div className="flex h-screen w-full overflow-hidden">
           <AppSidebar />
           <div className="flex flex-col flex-grow w-full">
