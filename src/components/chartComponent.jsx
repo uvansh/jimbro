@@ -26,12 +26,12 @@ const chartCategory = [
     title: "Monthly Progress",
     description: "Showing total workout time for the last 6 months",
     data: [
-      { month: "January", desktop: 186, mobile: 80 },
-      { month: "February", desktop: 305, mobile: 200 },
-      { month: "March", desktop: 237, mobile: 120 },
-      { month: "April", desktop: 73, mobile: 190 },
-      { month: "May", desktop: 209, mobile: 130 },
-      { month: "June", desktop: 214, mobile: 140 },
+      { month: "January", workoutTime: 300, caloriesIntake: 2000 },
+      { month: "February", workoutTime: 86, caloriesIntake: 2000 },
+      { month: "March", workoutTime: 340, caloriesIntake: 2300 },
+      { month: "April", workoutTime: 186, caloriesIntake: 2000 },
+      { month: "May", workoutTime: 250, caloriesIntake: 2300 },
+      { month: "June", workoutTime: 200, caloriesIntake: 2300 },
     ]
   },
   {
@@ -39,24 +39,24 @@ const chartCategory = [
     title: "Weekly Progress",
     description: "Showing total workout time for the last 7 days",
     data: [
-      { day: "Sunday", desktop: 186, mobile: 80 },
-      { day: "Monday", desktop: 305, mobile: 200 },
-      { day: "Tuesday", desktop: 237, mobile: 120 },
-      { day: "Wednesday", desktop: 73, mobile: 190 },
-      { day: "Thursday", desktop: 209, mobile: 130 },
-      { day: "Friday", desktop: 214, mobile: 140 },
-      { day: "Saturday", desktop: 214, mobile: 140 },
+      { day: "Sunday", workoutTime: 186, caloriesIntake: 80 },
+      { day: "Monday", workoutTime: 305, caloriesIntake: 200 },
+      { day: "Tuesday", workoutTime: 237, caloriesIntake: 120 },
+      { day: "Wednesday", workoutTime: 73, caloriesIntake: 190 },
+      { day: "Thursday", workoutTime: 209, caloriesIntake: 130 },
+      { day: "Friday", workoutTime: 214, caloriesIntake: 140 },
+      { day: "Saturday", workoutTime: 214, caloriesIntake: 140 },
     ]
   },
 ]
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  workoutTime: {
+    label: "Workout Time",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  caloriesIntake: {
+    label: "Calories Intake",
     color: "hsl(var(--chart-2))",
   },
   exerciseDone: {
@@ -215,45 +215,45 @@ const ChartComponent = () => {
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 <defs>
-                  <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="fillworkoutTime" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor="var(--color-desktop)"
+                      stopColor="var(--color-workoutTime)"
                       stopOpacity={0.8}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-desktop)"
+                      stopColor="var(--color-workoutTime)"
                       stopOpacity={0.1}
                     />
                   </linearGradient>
-                  <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="fillcaloriesIntake" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor="var(--color-mobile)"
+                      stopColor="var(--color-caloriesIntake)"
                       stopOpacity={0.8}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-mobile)"
+                      stopColor="var(--color-caloriesIntake)"
                       stopOpacity={0.1}
                     />
                   </linearGradient>
                 </defs>
                 <Area
-                  dataKey="mobile"
+                  dataKey="caloriesIntake"
                   type="natural"
-                  fill="url(#fillMobile)"
+                  fill="url(#fillcaloriesIntake)"
                   fillOpacity={0.4}
-                  stroke="var(--color-mobile)"
+                  stroke="var(--color-caloriesIntake)"
                   stackId="a"
                 />
                 <Area
-                  dataKey="desktop"
+                  dataKey="workoutTime"
                   type="natural"
-                  fill="url(#fillDesktop)"
+                  fill="url(#fillworkoutTime)"
                   fillOpacity={0.4}
-                  stroke="var(--color-desktop)"
+                  stroke="var(--color-workoutTime)"
                   stackId="a"
                 />
               </AreaChart>
