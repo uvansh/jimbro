@@ -78,7 +78,7 @@ const WorkOut = () => {
         console.log(`Selected Values:`, selectedValues);
         try {
             setLoadingState();
-            const response = await fetch(`https://api.api-ninjas.com/v1/exercises?type=${selectedValues[1]}&difficulty=${selectedValues[4]}&muscle=${selectedValues[2]}&equipment=${selectedValues[3]}&limit=10`,
+            const response = await fetch(`https://api.api-ninjas.com/v1/exercises?type=${selectedValues[1]}&difficulty=${selectedValues[4]}&muscle=${selectedValues[2]}&equipment=${selectedValues[3]}&limit=5`,
                 {
                     headers: {
                         "X-Api-Key": "2LVGvRBZjPl/9S3LoHAudA==BUjIzQMSgjaCVU1G"

@@ -2,6 +2,8 @@ import {auth, currentUser} from '@clerk/nextjs/server'
 import {Card,CardDescription,CardContent,CardHeader,CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import { BrainCircuit } from 'lucide-react';
+import Link from 'next/link';
+
 export default async function Home() {
   const { userId } = await auth()
   const user = await currentUser()
@@ -40,10 +42,12 @@ export default async function Home() {
 
   // Get the Backend API User object when you need access to the user's information
   // Use `user` to render user details or create UI elements
+  
   return (
     <div className="font-bold text-2xl text-neutral-100">
       <h1 className='text-3xl'>Welcome, <span className='text-green-400'>{user.firstName}!</span></h1> 
       <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">This year has<span className="text-green-400 px-1">{DaysLeft}</span> days left</div>
+      <p>Use react `suspense` for fallback and fetching data from api without await and async</p>
       <div className='mx-auto flex justify-center'>
         <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4 w-full mt-10'>
           {cards.map((card)=>(
@@ -56,13 +60,13 @@ export default async function Home() {
               <img className='w-full h-full rounded-lg' src={card.link}/>
             </CardContent>
             <CardContent>
-              <Button><a href={card.url}>View</a></Button>
+              <Button><Link href={card.url}>View</Link></Button>
             </CardContent>
           </Card>
           ))}
         </div>
       </div>
-      <a href="/ask-ai"><Button variant="outline" className="text-black absolute bottom-3 right-6"><BrainCircuit/> Ask AI</Button></a>
+      <Link href="/ask-ai"><Button variant="outline" className="text-black absolute bottom-3 right-6"><BrainCircuit/> Ask AI</Button></Link>
     </div>
     )
 }

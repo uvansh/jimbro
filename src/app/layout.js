@@ -3,6 +3,7 @@ import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import Header from '@/components/Header';
+
 import {
   ClerkProvider,
 } from '@clerk/nextjs';
@@ -21,11 +22,11 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.className} antialiased`}
       >
-        <SidebarProvider defaultOpen={true}>
+        <SidebarProvider>
         <div className="flex h-screen w-full overflow-hidden">
           <AppSidebar />
           <div className="flex flex-col flex-grow w-full">
-              <Header toggler={<SidebarTrigger/>} className="w-full"/>
+              <Header toggler={<SidebarTrigger/>}/>
           <main className=" border border-neutral-800 flex-grow p-4 w-full overflow-x-hidden"> 
             {children}
           </main>

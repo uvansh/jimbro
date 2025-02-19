@@ -1,7 +1,7 @@
 'use client'
 
 import { Calendar, Home, ChefHat, ChartLine, ClipboardList, Settings, BicepsFlexed} from "lucide-react"
-
+import Link from 'next/link'
 import {
   Sidebar,
   SidebarContent,
@@ -55,7 +55,8 @@ export function AppSidebar() {
     await useIsMobile();
   }
   return (
-    <Sidebar collapsible={getDeviceInfo?"":"none"} className="h-screen border border-neutral-800">
+    <>
+    <Sidebar side="left" collapsible={getDeviceInfo?"":"none"} className="h-screen border border-neutral-800">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-2xl font-bold mb-10 mt-5"><span className="p-1"><BicepsFlexed/></span>jimBro</SidebarGroupLabel>
@@ -64,10 +65,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton  asChild>
-                    <a href={item.url}>
+                    <Link href={item.url}>
                       <item.icon/>
                       <span className="text-lg font-normal">{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -77,5 +78,6 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter/>
     </Sidebar>
+    </>
   )
 }

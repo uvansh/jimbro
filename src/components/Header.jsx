@@ -23,12 +23,11 @@ const Header = ({ toggler }) => {
 
     return (
         <Menubar className="flex bg-neutral-900 text-gray-100 items-center h-12 justify-between w-full">
-            {isLoading ?
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
-                    <ClipLoader color="#4EFF02" />
-                </div> :
-                <>
-                    <MenubarMenu>{toggler}</MenubarMenu>
+            {isLoading ? <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
+                <ClipLoader color="#4EFF02" />
+            </div> :
+                <> 
+                <MenubarMenu>{toggler}</MenubarMenu>
                     <MenubarMenu>
                         <MenubarTrigger className="text-xl text-neutral-300 font-bold ml-1"><span className="p-1"><BicepsFlexed /></span>jimBro</MenubarTrigger>
                     </MenubarMenu>
