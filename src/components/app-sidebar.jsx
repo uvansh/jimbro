@@ -1,6 +1,6 @@
 'use client'
 
-import { Calendar, Home, ChefHat, ChartLine, ClipboardList, Settings, BicepsFlexed} from "lucide-react"
+import { Calendar, Home, ChefHat, ChartLine, ClipboardList, Settings, BicepsFlexed, LogOut } from "lucide-react"
 import Link from 'next/link'
 import {
   Sidebar,
@@ -15,6 +15,9 @@ import {
 } from "@/components/ui/sidebar"
 
 import { useIsMobile } from "@/hooks/use-mobile"
+import ProfileAvatar from "./ProfileAvatar"
+import {Button} from '@/components/ui/button'
+
 
 // Menu items.
 const items = [
@@ -50,10 +53,11 @@ const items = [
   },
 ]
 
-export function AppSidebar() {
+export function AppSidebar(props) {
   async function getDeviceInfo(){
     await useIsMobile();
   }
+
   return (
     <>
     <Sidebar side="left" collapsible={getDeviceInfo?"":"none"} className="h-screen border border-neutral-800">
@@ -76,7 +80,21 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter/>
+        <hr className="border border-b-2 border-neutral-700 mb-2 flex items-center"/>
+      <SidebarFooter>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <div className="flex items-center gap-2 mb-2 ml-2">
+                      <img src={props.userImage} width={35} className="rounded-full"/>
+                    <div className="flex flex-col">
+                    <span>{props.userName}</span>
+                    <span className="text-neutral-500 text-xs">{props.userEmail}</span>
+                  </div>
+                    <LogOut size={18} className="mx-auto cursor-pointer">{props.userSignOut}</LogOut>
+                    </div>
+                </SidebarMenuItem>
+              </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
     </>
   )

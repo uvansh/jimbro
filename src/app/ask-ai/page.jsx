@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import HashLoader from "react-spinners/HashLoader";
+import { ArrowUp } from 'lucide-react';
 
 const AskAi = () => {
     const genAI = new GoogleGenerativeAI("AIzaSyBKua_NalWtCGpWgomT9V1QPHePubhTKKU");
@@ -61,23 +62,25 @@ const AskAi = () => {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={getResponseFromAi}>
-                        <label htmlFor="question">Question</label>
-                        <Input className="my-2" type='text' name="question" value={question} onChange={(e)=>setQuestion(e.target.value)} placeholder='Ask AI anything' required />
-                        <Button type="submit">Submit</Button>
+                        <label htmlFor="question"></label>
+                        <div className='flex mt-2 items-center px-2 bg-neutral-800 text-neutral-100 rounded-full'>
+                        <Input className="my-2 border-none text-neutral-200" type='text' name="question" value={question} onChange={(e)=>setQuestion(e.target.value)} placeholder='Ask AI anything' required />
+                        <Button size="icon" className="rounded-full p-3 bg-white hover:bg-white/50 hover:text-black" type="submit"><ArrowUp color='black'/></Button>
+                        </div>
                     </form>
                 </CardContent>
                 <CardContent>
                     <div className='text-xs text-neutral-400 font-bold mb-2'>Some general queries</div>
-                    <div className='grid grid-cols-5 gap-1'>
-                        <div className='col-span-3 bg-green-500 p-1 opacity-80 text-white rounded-full border border-green-300 flex items-center pl-3 text-sm'>
+                    <div className='flex wraped flex-wrap gap-2 items-center '>
+                        <Button type="link" className=' bg-green-500 p-4 opacity-80 text-white rounded-full border border-green-300 flex items-center pl-3 text-sm hover:bg-green-600'>
                             <NotebookPen className='mr-1 h-5' /> Prepare a meal plan for me
-                        </div>
-                        <div className='col-span-3 bg-red-500 p-1 opacity-80 text-white rounded-full border border-red-300 flex items-center pl-3 text-sm'>
-                            <HandHeart className='mr-1 h-5' /> Help me with my workout routine
-                        </div>
-                        <div className='col-span-3 bg-blue-500 p-1 opacity-80 text-white rounded-full border border-blue-300 flex items-center pl-3 text-sm'>
+                        </Button>
+                        <Button type="link" className='bg-red-500 p-4 opacity-80 text-white rounded-full border border-red-300 flex items-center pl-3 text-sm hover:bg-red-600'>
+                            <HandHeart className='mr-1 h-5' /> Help me with my workout routine 
+                        </Button>
+                        <Button type="link" className='bg-blue-500 p-4 opacity-80 text-white rounded-full border border-blue-300 flex items-center pl-3 text-sm hover:bg-blue-600'>
                             <CornerDownRight className='mr-1 h-5' /> Effective calves exercise
-                        </div>
+                        </Button>
                     </div>
                 </CardContent>
             </Card>

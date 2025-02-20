@@ -1,19 +1,14 @@
-import {auth, currentUser} from '@clerk/nextjs/server'
 import {Card,CardDescription,CardContent,CardHeader,CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import { BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
+import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Home() {
-  const { userId } = await auth()
-  const user = await currentUser()
+  const user = await currentUser();
   const lastDayOfYear = new Date(new Date().getFullYear(),11,31);
   const currentDayOfYear = new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate());
   const DaysLeft = Math.ceil((lastDayOfYear - currentDayOfYear) / (1000 * 60 * 60 * 24));
-
-  if (!userId) {
-    return <div>Sign in to view this page</div>
-  }
 
   const cards = [
     {
@@ -47,7 +42,6 @@ export default async function Home() {
     <div className="font-bold text-2xl text-neutral-100">
       <h1 className='text-3xl'>Welcome, <span className='text-green-400'>{user.firstName}!</span></h1> 
       <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">This year has<span className="text-green-400 px-1">{DaysLeft}</span> days left</div>
-      <p>Use react `suspense` for fallback and fetching data from api without await and async</p>
       <div className='mx-auto flex justify-center'>
         <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4 w-full mt-10'>
           {cards.map((card)=>(
