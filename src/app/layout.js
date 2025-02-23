@@ -1,4 +1,4 @@
-import {auth, currentUser} from '@clerk/nextjs/server'
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -9,6 +9,7 @@ import {
   ClerkProvider,
   SignOutButton,
 } from '@clerk/nextjs';
+import { auth,currentUser } from "@clerk/nextjs/server";
 
 const inter = Inter({ subset: "latin" })
 
@@ -18,30 +19,26 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const { userId } = await auth()
-  const user = await currentUser()
+  const { userId } = await auth();
+  const user = await currentUser();
 
-  
-  if (!userId) {
-    return <div>Sign in to view this page</div>
-  }
   return (
     <ClerkProvider>
     <html lang="en">
       <body
-        className={`${inter.className} antialiased`}
+        className={`${inter.className} antialiased bg-neutral-900`}
       >
+        <div className="flex h-full w-full overflow-hidden">
         <SidebarProvider>
-        <div className="flex h-screen w-full overflow-hidden">
-          <AppSidebar userName={user.fullName} userSignOut={<SignOutButton/>} userImage={user.imageUrl} userEmail={user.emailAddresses[0].emailAddress} />
-          <div className="flex flex-col flex-grow w-full">
-              <Header toggler={<SidebarTrigger/>}/>
-          <main className=" border border-neutral-800 flex-grow p-4 w-full overflow-x-hidden"> 
+          {userId!==null?<AppSidebar userName={user.fullName} userSignOut={<SignOutButton/>} userImage={user.imageUrl} userEmail={user.emailAddresses[0].emailAddress} />:""}
+          <div className="flex h-full flex-col flex-grow w-full">
+          <Header toggler={<SidebarTrigger/>}/>
+          <main className="border border-neutral-800 h-full flex-grow p-4 w-full overflow-x-hidden"> 
             {children}
           </main>
           </div>
-          </div>
         </SidebarProvider>
+          </div>
       </body>
     </html>
     </ClerkProvider>

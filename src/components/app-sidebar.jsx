@@ -13,10 +13,7 @@ import {
   SidebarMenuItem,
   SidebarFooter
 } from "@/components/ui/sidebar"
-
 import { useIsMobile } from "@/hooks/use-mobile"
-import ProfileAvatar from "./ProfileAvatar"
-import {Button} from '@/components/ui/button'
 
 
 // Menu items.
@@ -90,7 +87,7 @@ export function AppSidebar(props) {
                     <span>{props.userName}</span>
                     <span className="text-neutral-500 text-xs">{props.userEmail}</span>
                   </div>
-                    <LogOut size={18} className="mx-auto cursor-pointer">{props.userSignOut}</LogOut>
+                   {props.userSignOut}
                     </div>
                 </SidebarMenuItem>
               </SidebarMenu>

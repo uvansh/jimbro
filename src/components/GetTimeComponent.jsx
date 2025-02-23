@@ -26,20 +26,19 @@ const ButtonData = [
     }
 ]
 
-const GetTimeComponent = () => {
-    const [timeLeft, setTimeLeft] = useState(0);
-    const [isRunning, setIsRunning] = useState(false);
+const GetTimeComponent = (props) => {
+    const [timeLeft, setTimeLeft] = useState(props.exerciseTime);
+    const isRunning = props.running;
 
+    // const incrementCounter = () => {
+    //     setTimeLeft((prev) => prev + 1800);
+    // }
 
-    const incrementCounter = () => {
-        setTimeLeft((prev) => prev + 1800);
-    }
-
-    const decrementCounter = () => {
-        if(timeLeft>0){
-            setTimeLeft((prev) => prev - 1800);
-        }
-    }
+    // const decrementCounter = () => {
+    //     if(timeLeft>0){
+    //         setTimeLeft((prev) => prev - 1800);
+    //     }
+    // }
 
     useEffect(() => {
         let timer;
@@ -51,9 +50,6 @@ const GetTimeComponent = () => {
         return () => clearInterval(timer);
     }, [isRunning, timeLeft]);
 
-    const startTimer = () => {
-        setIsRunning(true);
-    }
 
     const formatTime = (time) => {
         const minutes = Math.floor(time / 60);
@@ -61,22 +57,21 @@ const GetTimeComponent = () => {
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
     return (
-        <div className='flex flex-col items-center bg-neutral-800 text-white rounded-3xl lg:w-3/5'>
-        <div className='flex flex-col items-center mt-4'>
-            <h1 className='text-3xl font-bold mb-2'>Set Time</h1>
-            <h1 className='text-2xl mb-2 font-bold bg-white rounded-full p-2 px-4 text-black'>{formatTime(timeLeft)}</h1>
+        <div className='flex flex-col items-center bg-neutral-800 text-white rounded-3xl w-full'>
+        <div className='flex flex-col my-4 items-center'>
+            <h1 className='text-3xl font-bold mb-2'>Timer</h1>
+            <h1 className='text-3xl font-bold bg-white rounded-full p-2 px-4 text-black'>{formatTime(timeLeft)}</h1>
         </div>
-        <div className='flex gap-2 items-center justify-center mt-2'>
+        {/* <div className='flex gap-2 items-center justify-center mt-2'>
             <Button size="icon" variant="secondary" onClick={incrementCounter} name="increment"><Plus/></Button>
             <Button  variant="secondary" onClick={startTimer}>Start</Button>
             <Button size="icon" variant="secondary" onClick={decrementCounter} name="decrement"><Minus/></Button>
-        </div>
-        <div className='flex gap-2 items-center p-4'>
-            <h1 className='font-bold'>Rest Time</h1>
-            {ButtonData.map((data)=>(
+        </div> */}
+        {/* <div className='flex gap-2 items-center p-4'>below code is inside this block</div> */}
+            {/* <h1 className='font-bold'>Rest Time</h1> */}
+            {/* {ButtonData.map((data)=>(
                 <Button key={data.id} value={data.value} className="border border-2 border-white rounded-full hover:bg-neutral-700" onClick={()=>{}}>{data.title}</Button>
-            ))}
-        </div>
+            ))} */}
         </div>
     )
 }

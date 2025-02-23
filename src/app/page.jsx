@@ -2,14 +2,15 @@ import {Card,CardDescription,CardContent,CardHeader,CardTitle} from "@/component
 import {Button} from "@/components/ui/button";
 import { BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
-import { currentUser } from "@clerk/nextjs/server";
+import {currentUser} from '@clerk/nextjs/server'
 
 export default async function Home() {
-  const user = await currentUser();
   const lastDayOfYear = new Date(new Date().getFullYear(),11,31);
   const currentDayOfYear = new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate());
   const DaysLeft = Math.ceil((lastDayOfYear - currentDayOfYear) / (1000 * 60 * 60 * 24));
-
+  
+  const user = await currentUser()
+  
   const cards = [
     {
       id:1,
@@ -35,15 +36,17 @@ export default async function Home() {
   ]
   // Protect the route by checking if the user is signed in
 
+
+
   // Get the Backend API User object when you need access to the user's information
   // Use `user` to render user details or create UI elements
   
   return (
-    <div className="font-bold text-2xl text-neutral-100">
+    <div className="font-bold text-2xl text-neutral-100 ">
       <h1 className='text-3xl'>Welcome, <span className='text-green-400'>{user.firstName}!</span></h1> 
       <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">This year has<span className="text-green-400 px-1">{DaysLeft}</span> days left</div>
       <div className='mx-auto flex justify-center'>
-        <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4 w-full mt-10'>
+        <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4  mt-10'>
           {cards.map((card)=>(
             <Card key={card.id}>
             <CardHeader>
@@ -60,7 +63,7 @@ export default async function Home() {
           ))}
         </div>
       </div>
-      <Link href="/ask-ai"><Button variant="outline" className="text-black absolute bottom-3 right-6"><BrainCircuit/> Ask AI</Button></Link>
-    </div>
+          <Link href="/ask-ai"><Button variant="outline" className="text-black absolute bottom-2 right-3"><BrainCircuit/> Ask AI</Button></Link>
+      </div>
     )
 }
