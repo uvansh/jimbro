@@ -1,43 +1,65 @@
 "use client"
 
 import {
-    Menubar,
-    MenubarMenu,
-    MenubarTrigger,
+  Menubar,
+  MenubarMenu,
 } from "@/components/ui/menubar"
-import { SignedIn, UserButton, SignUpButton, SignedOut } from "@clerk/nextjs";
+import { SignedIn, UserButton, SignInButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
-import { BicepsFlexed } from "lucide-react";
-import { useEffect, useState } from "react";
-import ClipLoader from "react-spinners/ClipLoader";
+import { BicepsFlexed, UserRoundPenIcon } from "lucide-react";
+import { SidebarTrigger } from '@/components/ui/sidebar'; // Shadcn Sidebar
+import { useEffect,useState } from "react";
 
-const Header = ({ toggler }) => {
-    const { isLoaded, user } = useUser();
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        if (isLoaded) {
-            setIsLoading(false)
-        }
-    }, [isLoaded])
+const Header = () => {
+  const { isLoaded, user } = useUser();
+  const [isLoading,setIsLoaded] = useState(true);
 
-    return (
-        <Menubar className="flex bg-neutral-900 text-gray-100 items-center h-12 justify-between w-full">
-            {isLoading ? <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
-                <ClipLoader color="#4EFF02" />
-            </div> :
-                <> 
-                <MenubarMenu>{toggler}</MenubarMenu>
-                    <MenubarMenu>
-                        <MenubarTrigger className="text-xl text-neutral-300 font-bold ml-1"><span className="p-1"><BicepsFlexed /></span>jimBro</MenubarTrigger>
-                    </MenubarMenu>
-                    <MenubarMenu>
-                        <span className="mx-2 px-2">{user ? <SignedIn><UserButton /></SignedIn> :""}</span>
-                    </MenubarMenu>
-                </>
-            }
-        </Menubar>
-    )
+  useEffect(() => {
+    if (isLoaded) {
+      setIsLoaded(prev=>!prev);
+    }
+  }, [isLoaded]);
+
+  return (
+    <header className="text-neutral-300">
+      <Menubar className="bg-neutral-900 flex items-center">
+        {/* Left: Sidebar Trigger */}
+        <div className="w-[60px] flex items-center lg:hidden">
+          {!isLoaded? (
+            <div className="mx-2 h-5 w-5 bg-neutral-700 animate-pulse rounded" />
+          ) : !user? (
+            ""
+          ):<SidebarTrigger>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            </SidebarTrigger>}
+        </div>
+
+        {/* Middle: Logo */}
+        <div className="flex-1 flex justify-center lg:justify-between">
+          <span className="text-xl flex items-center text-neutral-300 font-bold ml-1"><span className="p-1"><BicepsFlexed /></span>jimBro</span>
+        </div>
+        {/* Right: Clerk user data */}
+        <div className="w-[120px] flex justify-end">
+          {!isLoaded ? (
+            <div className="h-8 w-8 bg-neutral-700 animate-pulse rounded-full" />
+          ) : !user ? (
+            <MenubarMenu>
+              <SignInButton mode="modal" className="cursor-pointer mr-1" >
+                <UserRoundPenIcon color="#fffff1" />
+              </SignInButton>
+            </MenubarMenu>
+          ) : (
+            <MenubarMenu>
+              {user ? <SignedIn><UserButton /></SignedIn> : <SignedOut><SignInButton className="bg-white rounded-full py-1 px-3 text-black" /></SignedOut>}
+            </MenubarMenu>
+          )}
+        </div>
+      </Menubar>
+    </header>
+  )
 }
 
 export default Header;

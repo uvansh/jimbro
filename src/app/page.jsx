@@ -42,9 +42,9 @@ export default async function Home() {
   // Use `user` to render user details or create UI elements
   
   return (
-    <div className="font-bold text-2xl text-neutral-100 ">
-      <h1 className='text-3xl'>Welcome, <span className='text-green-400'>{user.firstName}!</span></h1> 
-      <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">This year has<span className="text-green-400 px-1">{DaysLeft}</span> days left</div>
+    <div className="font-bold relative  text-2xl text-neutral-100 ">
+      <h1 className='text-3xl'>Welcome, <span className='text-green-400'>{user.firstName}! 😊</span></h1> 
+      <div className="flex w-full shadow-lg justify-center bg-black rounded-lg p-2 mt-5 text-white">This year has<span className="text-green-400 px-1">{DaysLeft}</span> days left {DaysLeft>200?"😁":"😬"}</div>
       <div className='mx-auto flex justify-center'>
         <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4  mt-10'>
           {cards.map((card)=>(
@@ -62,8 +62,8 @@ export default async function Home() {
           </Card>
           ))}
         </div>
+        <Link href="/ask-ai" className="text-black fixed bottom-3 right-5"><Button variant="outline" ><BrainCircuit/> Ask AI</Button></Link>
       </div>
-          <Link href="/ask-ai"><Button variant="outline" className="text-black absolute bottom-2 right-3"><BrainCircuit/> Ask AI</Button></Link>
       </div>
     )
 }

@@ -184,7 +184,7 @@ const ChartComponent = () => {
       {chartCategory.map((chart) =>
         <Card key={chart.id}>
           <CardHeader>
-            <CardTitle className="text-xl">{chart.title}</CardTitle>
+            <CardTitle className="text-xl">{chart.title}  📈</CardTitle>
             <CardDescription>
               {chart.description}
             </CardDescription>

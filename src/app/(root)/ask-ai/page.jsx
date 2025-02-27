@@ -45,6 +45,7 @@ const AskAi = () => {
         }
         finally{
             setLoading(false);
+            setQuestion("");
         }
         return 
     }
@@ -57,14 +58,13 @@ const AskAi = () => {
             
             <Card className="lg:w-3/5 mx-auto h-full">
                 <CardHeader>
-                    <CardTitle className="text-xl font-bold">Jimmy AI</CardTitle><hr className="bg-black w-full border-black border-2"/>
+                    <CardTitle className="text-xl font-bold">Jimmy AI 🤖</CardTitle><hr className="bg-black w-full border-black border-2"/>
                     <CardDescription>Our AI can answer any question you have with your health and fitness goals.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={getResponseFromAi}>
-                        <label htmlFor="question"></label>
                         <div className='flex mt-2 items-center px-2 bg-neutral-800 text-neutral-100 rounded-full'>
-                        <Input className="my-2 border-none text-neutral-200" type='text' name="question" value={question} onChange={(e)=>setQuestion(e.target.value)} placeholder='Ask AI anything' required />
+                        <Input className="my-2 border-none outline:none focus:border-none text-neutral-200 rounded-full" type='text' name="question" value={question} onChange={(e)=>setQuestion(e.target.value)} placeholder='Ask AI anything' required autoComplete="off"/>
                         <Button size="icon" className="rounded-full p-3 bg-white hover:bg-white/50 hover:text-black" type="submit"><ArrowUp color='black'/></Button>
                         </div>
                     </form>
