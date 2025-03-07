@@ -3,7 +3,7 @@
 import React from 'react'
 import { TrendingUp } from "lucide-react"
 import { PieChart, Pie, Label } from "recharts"
-import { AreaChart,Area,CartesianGrid,XAxis,YAxis } from "recharts";
+import { AreaChart, Area, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -23,31 +23,36 @@ import {
 const chartCategory = [
   {
     id: 1,
-    title: "Monthly Progress",
-    description: "Showing total workout time for the last 6 months",
+    title: "Exercise Analytics",
+    measurement: 'min',
+    emoji: "🏋️‍♂️",
+    description: "Showing total workout time for the last 7 days",
     data: [
-      { month: "January", workoutTime: 300, caloriesIntake: 2000 },
-      { month: "February", workoutTime: 86, caloriesIntake: 2000 },
-      { month: "March", workoutTime: 340, caloriesIntake: 2300 },
-      { month: "April", workoutTime: 186, caloriesIntake: 2000 },
-      { month: "May", workoutTime: 250, caloriesIntake: 2300 },
-      { month: "June", workoutTime: 200, caloriesIntake: 2300 },
+      { day: "Sunday", workoutTime: 0 },
+      { day: "Monday", workoutTime: 200 },
+      { day: "Tuesday", workoutTime: 120 },
+      { day: "Wednesday", workoutTime: 0 },
+      { day: "Thursday", workoutTime: 130 },
+      { day: "Friday", workoutTime: 140 },
+      { day: "Saturday", workoutTime: 140 },
     ]
   },
   {
     id: 2,
-    title: "Weekly Progress",
+    title: "Calorie Analysis",
+    measurement: 'cal.',
+    emoji: "🥗",
     description: "Showing total workout time for the last 7 days",
     data: [
-      { day: "Sunday", workoutTime: 186, caloriesIntake: 80 },
-      { day: "Monday", workoutTime: 305, caloriesIntake: 200 },
-      { day: "Tuesday", workoutTime: 237, caloriesIntake: 120 },
-      { day: "Wednesday", workoutTime: 73, caloriesIntake: 190 },
-      { day: "Thursday", workoutTime: 209, caloriesIntake: 130 },
-      { day: "Friday", workoutTime: 214, caloriesIntake: 140 },
-      { day: "Saturday", workoutTime: 214, caloriesIntake: 140 },
+      { day: "Sunday", caloriesIntake: 2000 },
+      { day: "Monday", caloriesIntake: 1500 },
+      { day: "Tuesday", caloriesIntake: 2500 },
+      { day: "Wednesday", caloriesIntake: 900 },
+      { day: "Thursday", caloriesIntake: 2350 },
+      { day: "Friday", caloriesIntake: 2100 },
+      { day: "Saturday", caloriesIntake: 800 },
     ]
-  },
+  }
 ]
 
 const chartConfig = {
@@ -82,19 +87,20 @@ const chartConfig = {
     label: "arm",
     color: "hsl(var(--chart-5))",
   },
-  back:{
-    label:"back",
-    color:"hsl(var(--chart-6))",
+  back: {
+    label: "back",
+    color: "hsl(var(--chart-6))",
   },
-  cardio:{
-    lable:"cardio",
-    color:"hsl(var(--chart-7))"
+  cardio: {
+    lable: "cardio",
+    color: "hsl(var(--chart-7))"
   }
 }
 
 const piChart = {
   title: "Taget body part",
   description: "Showing the number of body parts covered during the workout",
+  emoji: "📊",
   data: [
     { bodyPart: "Chest", exerciseDone: 75, fill: "var(--color-chest)" },
     { bodyPart: "Shoulders", exerciseDone: 48, fill: "var(--color-shoulders)" },
@@ -108,12 +114,34 @@ const piChart = {
 
 const PieComponent = () => {
   const totalVisitors = React.useMemo(() => {
-    return piChart.data.reduce((acc, curr) => acc + curr.exerciseDone, 0)
+    return piChart.data.reduce((acc, curr) => acc + curr.exerciseDone, 0);
   }, [])
-  return(<>
-    <Card className="flex flex-col">
+
+  const [piExercise,setPiExercise] = React.useState([]);
+
+  const getPiExercise = async () => {
+    try {
+      const res = await fetch("/api/progress-data/exercise-data");
+      const data = await res.json();
+      setPiExercise(data);
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(`Analysis failed: ${res.status} ${data.message}`);
+      }
+    } catch (error) {
+      console.error({ message: "Error fetching data", error });
+    }
+  }
+
+  React.useEffect(()=>{
+    getPiExercise();
+  },[]);
+
+  return (
+    <>
+      <Card className="flex flex-col">
         <CardHeader className="items-center pb-0">
-          <CardTitle className="text-xl">Exercises Done</CardTitle>
+          <CardTitle className="text-xl">Exercises Done {piChart.emoji}</CardTitle>
           <CardDescription>January - June 2024</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 pb-0">
@@ -127,7 +155,7 @@ const PieComponent = () => {
                 content={<ChartTooltipContent hideLabel />}
               />
               <Pie
-                data={piChart.data}
+                data={piExercise.data}
                 dataKey="exerciseDone"
                 nameKey="bodyPart"
                 innerRadius={60}
@@ -175,7 +203,7 @@ const PieComponent = () => {
           </div>
         </CardFooter>
       </Card>
-  </>)
+    </>)
 }
 
 const ChartComponent = () => {
@@ -184,7 +212,7 @@ const ChartComponent = () => {
       {chartCategory.map((chart) =>
         <Card key={chart.id}>
           <CardHeader>
-            <CardTitle className="text-xl">{chart.title}  📈</CardTitle>
+            <CardTitle className="text-xl">{chart.title} {chart.emoji}</CardTitle>
             <CardDescription>
               {chart.description}
             </CardDescription>
@@ -201,17 +229,17 @@ const ChartComponent = () => {
               >
                 <CartesianGrid vertical={false} />
                 <XAxis
-                  dataKey={chart.data[0].day ? "day" : "month"}
+                  dataKey={"day"}
                   tickLine={false}
                   axisLine={false}
-                  tickMargin={6}
+                  tickMargin={8}
                   tickFormatter={(value) => value.slice(0, 3)}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tickMargin={3}
-                  tickFormatter={(value) => `${value}(min)`}
+                  tickMargin={8}
+                  tickFormatter={(value) => `${value} ${chart.measurement}`}
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 <defs>
@@ -273,7 +301,7 @@ const ChartComponent = () => {
           </CardFooter>
         </Card>
       )}
-  </>)
+    </>)
 }
 
-export {ChartComponent,PieComponent}
+export { ChartComponent, PieComponent }

@@ -22,8 +22,8 @@ const Header = () => {
   }, [isLoaded]);
 
   return (
-    <header className="text-neutral-300">
-      <Menubar className="bg-neutral-900 flex items-center">
+    <header className="text-neutral-300 h-12">
+      <Menubar className="bg-neutral-900 flex items-center justify-center h-12">
         {/* Left: Sidebar Trigger */}
         <div className="w-[60px] flex items-center lg:hidden">
           {!isLoaded? (

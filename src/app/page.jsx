@@ -62,7 +62,7 @@ export default async function Home() {
           </Card>
           ))}
         </div>
-        <Link href="/ask-ai" className="text-black fixed bottom-3 right-5"><Button variant="outline" ><BrainCircuit/> Ask AI</Button></Link>
+        <Link href="/ask-ai" className="text-black fixed bottom-3 right-4"><Button variant="outline" className="border-2 border-black" ><BrainCircuit/> Ask AI</Button></Link>
       </div>
       </div>
     )

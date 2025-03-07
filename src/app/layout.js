@@ -30,7 +30,7 @@ export default async function RootLayout({ children }) {
         >
         <div className="flex h-full w-full overflow-hidden">
         <SidebarProvider>
-          {userId!==null?<AppSidebar userName={user.fullName} userSignOut={<SignOutButton/>} userImage={user.imageUrl} userEmail={user.emailAddresses[0].emailAddress} />:""}
+          {userId!==null?<AppSidebar userName={user.fullName} userdbId={user.id} userSignOut={<SignOutButton/>} userImage={user.imageUrl} userEmail={user.emailAddresses[0].emailAddress} />:""}
           <div className="flex h-full flex-col flex-grow w-full">
           <Header/>
           <main className="border border-neutral-800 h-full flex-grow p-4 w-full overflow-x-hidden"> 
