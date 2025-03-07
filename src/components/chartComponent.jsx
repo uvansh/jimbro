@@ -1,8 +1,8 @@
 "use client"
 
-import React from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { TrendingUp } from "lucide-react"
-import { PieChart, Pie, Label } from "recharts"
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Label } from "recharts"
 import { AreaChart, Area, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -97,117 +97,185 @@ const chartConfig = {
   }
 }
 
-const piChart = {
-  title: "Taget body part",
-  description: "Showing the number of body parts covered during the workout",
-  emoji: "📊",
-  data: [
-    { bodyPart: "Chest", exerciseDone: 75, fill: "var(--color-chest)" },
-    { bodyPart: "Shoulders", exerciseDone: 48, fill: "var(--color-shoulders)" },
-    { bodyPart: "Legs", exerciseDone: 87, fill: "var(--color-legs)" },
-    { bodyPart: "Abs", exerciseDone: 73, fill: "var(--color-abs)" },
-    { bodyPart: "Arms", exerciseDone: 39, fill: "var(--color-arm)" },
-    { bodyPart: "Back", exerciseDone: 86, fill: "var(--color-back)" },
-    { bodyPart: "Cardio", exerciseDone: 20, fill: "var(--color-cardio)" },
-  ]
-}
 
-const PieComponent = () => {
-  const totalVisitors = React.useMemo(() => {
-    return piChart.data.reduce((acc, curr) => acc + curr.exerciseDone, 0);
-  }, [])
+export const PieComponent = () => {
+  const [piExercise, setPiExercise] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [totalExercises, setTotalExercises] = useState(0);
 
-  const [piExercise,setPiExercise] = React.useState([]);
+  // Define custom colors for each body part
+  const COLORS = {
+    Chest: "#FF8042",
+    Shoulders: "#0088FE",
+    Legs: "#00C49F",
+    Abs: "#FFBB28",
+    Arms: "#FF0000",
+    Back: "#8884d8",
+    Cardio: "#82ca9d"
+  };
 
-  const getPiExercise = async () => {
+  // Generate chart data based on the fetched exercise data
+  const generateChartData = useCallback((data) => {
+    if (!data) return [];
+    
+    // Ensure we have numeric values for all categories
+    const chartData = [
+      { bodyPart: "Chest", exerciseDone: Number(data.Chest || 0), fill: COLORS.Chest },
+      { bodyPart: "Shoulders", exerciseDone: Number(data.Shoulders || 0), fill: COLORS.Shoulders },
+      { bodyPart: "Legs", exerciseDone: Number(data.Legs || 0), fill: COLORS.Legs },
+      { bodyPart: "Abs", exerciseDone: Number(data.Abs || 0), fill: COLORS.Abs },
+      { bodyPart: "Arms", exerciseDone: Number(data.Arms || 0), fill: COLORS.Arms },
+      { bodyPart: "Back", exerciseDone: Number(data.Back || 0), fill: COLORS.Back },
+      { bodyPart: "Cardio", exerciseDone: Number(data.Cardio || 0), fill: COLORS.Cardio },
+    ];
+    
+    // Filter out zero values
+    const filteredData = chartData.filter(item => item.exerciseDone > 0);
+    
+    // Calculate total exercises
+    const total = filteredData.reduce((sum, item) => sum + item.exerciseDone, 0);
+    setTotalExercises(total);
+    
+    return filteredData;
+  }, []);
+  
+  const getPiExercise = useCallback(async () => {
     try {
-      const res = await fetch("/api/progress-data/exercise-data");
+      setLoading(true);
+      const res = await fetch("/api/progress-data/exercise-data", {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`Failed to fetch exercise data: ${res.status}`);
+      }
+      
       const data = await res.json();
       setPiExercise(data);
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(`Analysis failed: ${res.status} ${data.message}`);
-      }
+      setError(null);
     } catch (error) {
-      console.error({ message: "Error fetching data", error });
+      console.error("Error fetching exercise data:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-  }
-
-  React.useEffect(()=>{
+  }, []);
+  
+  useEffect(() => {
     getPiExercise();
-  },[]);
+    
+    // Remove the interval to prevent constant re-fetching
+    // const intervalId = setInterval(() => {
+    //   getPiExercise();
+    // }, 60000); // Refresh every minute
+    
+    // return () => clearInterval(intervalId);
+  }, [getPiExercise]);
+
+  // Memoize chart data to prevent unnecessary recalculations
+  const chartData = useMemo(() => generateChartData(piExercise), [generateChartData, piExercise]);
+  const hasData = useMemo(() => chartData.some(item => item.exerciseDone > 0), [chartData]);
+
+  // Custom tooltip component
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-2 rounded shadow-md border border-gray-200">
+          <p className="font-bold">{data.bodyPart}</p>
+          <p className="text-sm">{data.exerciseDone} exercises</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Custom label for pie chart segments
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, payload }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="white" 
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+        fontSize={12}
+        fontWeight="bold"
+      >
+        {`${payload.exerciseDone}`}
+      </text>
+    );
+  };
 
   return (
-    <>
-      <Card className="flex flex-col">
-        <CardHeader className="items-center pb-0">
-          <CardTitle className="text-xl">Exercises Done {piChart.emoji}</CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
-          {console.log(piExercise?.Arms)}
-        </CardHeader>
-        <CardContent className="flex-1 pb-0">
-          <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square max-h-[250px]"
-          >
+    <Card className="flex flex-col">
+      <CardHeader className="items-center pb-0">
+        <CardTitle className="text-xl">Exercises Done 📊</CardTitle>
+        <CardDescription>Body Part Distribution</CardDescription>
+      </CardHeader>
+      
+      <CardContent className="flex-1 pb-0">
+        {loading ? (
+          <div className='flex justify-center items-center h-[250px]'>
+            <p>Loading exercise data...</p>
+          </div>
+        ) : error ? (
+          <div className='flex justify-center items-center h-[250px] text-red-500'>
+            <p>Error: {error}</p>
+          </div>
+        ) : !hasData ? (
+          <div className='flex justify-center flex-col items-center h-[250px] p-5 text-lg'>
+            <p className='text-3xl'>🥺</p>
+            <p className="text-md">No exercise data yet!</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Add exercises to your routines to see them here.
+            </p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
               <Pie
-                data={piExercise?.data}
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={80}
+                innerRadius={40}
+                fill="#8884d8"
                 dataKey="exerciseDone"
                 nameKey="bodyPart"
-                innerRadius={60}
-                strokeWidth={5}
               >
-                <Label
-                  content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                      return (
-                        <text
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                        >
-                          <tspan
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            className="fill-foreground text-3xl font-bold"
-                          >
-                            {totalVisitors.toLocaleString()}
-                          </tspan>
-                          <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 24}
-                            className="fill-muted-foreground"
-                          >
-                            Exercises done
-                          </tspan>
-                        </text>
-                      )
-                    }
-                  }}
-                />
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
               </Pie>
+              <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+              <ChartTooltip content={<CustomTooltip />} />
             </PieChart>
-          </ChartContainer>
-        </CardContent>
-        <CardFooter className="flex-col gap-2 text-sm">
-          <div className="flex items-center gap-2 font-medium leading-none">
-            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-          </div>
-          <div className="leading-none text-muted-foreground">
-            Showing total visitors for the last 6 months
-          </div>
-        </CardFooter>
-      </Card>
-    </>)
-}
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+      
+      <CardFooter className="flex-col gap-2 text-sm">
+        <div className="leading-none text-muted-foreground">
+          Total exercises: {totalExercises}
+        </div>
+      </CardFooter>
+    </Card>
+  );
+};
 
-const ChartComponent = () => {
+export const ChartComponent = () => {
   return (
     <>
       {chartCategory.map((chart) =>
@@ -304,5 +372,3 @@ const ChartComponent = () => {
       )}
     </>)
 }
-
-export { ChartComponent, PieComponent }

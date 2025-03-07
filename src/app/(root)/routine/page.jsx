@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, PlusIcon } from "lucide-react";
 import GetTimeComponent from "@/components/GetTimeComponent";
 import { toast } from '@/hooks/use-toast';
 import { Select } from '@/components/ui/select';
@@ -17,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-
 export default function RoutinePage() {
   const [routines, setRoutines] = useState([]);
   const [routineName, setRoutineName] = useState("");
@@ -28,6 +27,7 @@ export default function RoutinePage() {
   const [choice,setChoice] = useState('');
   const isRunning = false;
   const [next, setNext] = useState(0);
+  const [selectedBodyParts, setSelectedBodyParts] = useState({});
 
   const routineData = routines[next];
 
@@ -54,8 +54,22 @@ export default function RoutinePage() {
 
   useEffect(() => {
     fetchRoutines();
-  }, [routineData]);
+  }, []);
+  
+  useEffect(() => {
+    if (choice) {
+      handleAnalysis(choice);
+    }
+  }, [choice]);
 
+  useEffect(() => {
+    if(routineData){
+      // Don't call handleAddDetails here as it requires parameters
+      // handleAddDetails();
+    }
+    // Don't call handleAnalysis without a category
+    // handleAnalysis();
+  }, [routineData]);
 
   const fetchRoutines = async () => {
     try {
@@ -81,7 +95,7 @@ export default function RoutinePage() {
       toast({
         title: "Routine Created",
         description: "Your routine has been created successfully.",
-        variant: "success",
+        variant: "default",
       });
       if (!res.ok) throw new Error(`Create failed: ${res.status} ${data.message || "Unknown error"}`);
       setRoutineName("");
@@ -91,17 +105,36 @@ export default function RoutinePage() {
       toast({
         title: "Error",
         description: "Failed to create routine. Please try again.",
-        variant: "destructive",
+        variant: "default",
       });
     }
   };
 
+
   const handleAddDetails = async (routineId) => {
-    if (!day || !muscle || !exercise || !exerciseTime) return;
+    if (!routineId) {
+      console.log("No routine ID provided, skipping");
+      return;
+    }
+    
+    if (!day || !muscle || !exercise || !exerciseTime) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
+      // First, update the routine with the new exercise details
+      console.log(`Adding details to routine ${routineId} with muscle: ${muscle}`);
       const res = await fetch("/api/routines/update", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
+        },
         body: JSON.stringify({
           id: routineId,
           detail: {
@@ -112,46 +145,120 @@ export default function RoutinePage() {
         }),
       });
 
+      const data = await res.json();
+      
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(`Update failed: ${res.status} ${data.message}`);
+        throw new Error(`Update failed: ${res.status} ${data.message || data.error || ''}`);
       }
+
+      // Now, increment the exercise count for the selected body part
+      await incrementExerciseCount(muscle);
+      
       toast({
         title: "Routine Updated",
         description: "Routine updated successfully",
-        variant: "default", // Use "destructive" for errors
+        variant: "default",
       });
+      
+      // Reset form fields
       setDay("");
       setMuscle("");
       setExercise("");
       setExerciseTime(0);
-      setNext(next);
+      
+      // Refresh routines
       fetchRoutines();
     } catch (error) {
+      console.error("Error updating routine:", error);
       toast({
-        title: "Error",
-        description: "Failed to update routine. Please try again.",
-        variant: "destructive", // Use "destructive" for errors
+        title: "Update Failed",
+        description: error.message || "Failed to update routine",
+        variant: "destructive",
       });
+    }
+  }
+
+  // New function to increment exercise count for a body part
+  const incrementExerciseCount = async (bodyPart) => {
+    // Skip if no body part is provided
+    if (!bodyPart) {
+      console.log("No body part provided for increment, skipping");
+      return;
+    }
+    
+    try {
+      console.log(`Incrementing count for body part: ${bodyPart}`);
+      const res = await fetch("/api/progress-data/exercise-data", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
+        },
+        body: JSON.stringify({ category: bodyPart }),
+      });
+
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(`Failed to increment exercise count: ${res.status} ${data.error || ''}`);
+      }
+
+      console.log("Exercise count updated:", data);
+      
+      // No need to call handleAnalysis here as it would make a duplicate API call
+    } catch (error) {
+      console.error("Error incrementing exercise count:", error);
     }
   };
 
-  const handleAnalysis = async () => {
-      try{
+  const handleAnalysis = async (choice, shouldIncrement = true) => {
+    // Skip if no category is provided
+    if (!choice) {
+      console.log("No category provided for analysis, skipping");
+      return;
+    }
+    
+    try {
+      // Only increment if shouldIncrement is true
+      if (shouldIncrement) {
+        console.log(`Analyzing and incrementing category: ${choice}`);
         const res = await fetch("/api/progress-data/exercise-data", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ choice: choice }),
+          headers: { 
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache" 
+          },
+          body: JSON.stringify({ category: choice }),
         });
-        if(!res.ok){
-          const data = await res.json();
-          throw new Error(`Analysis failed: ${res.status} ${data.message}`);
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(`Analysis failed: ${res.status} ${data.message || data.error}`);
         }
-
-      }catch(error){
-        console.error({message:"Error fetching data",error})
+        
+        console.log("Analysis successful:", data);
+        
+        // Show success toast
+        toast({
+          title: "Exercise Tracked",
+          description: `Added ${choice} exercise to your progress`,
+          variant: "default",
+        });
+      } else {
+        console.log(`Analyzing category without incrementing: ${choice}`);
       }
+    } catch (error) {
+      console.error("Error in handleAnalysis:", error);
+      
+      // Show error toast
+      toast({
+        title: "Error",
+        description: error.message || "Failed to track exercise",
+        variant: "destructive",
+      });
     }
+  }
 
 
   // Rest of your code...
@@ -181,6 +288,12 @@ export default function RoutinePage() {
     }
   };
 
+  const handleBodyPartSelect = (routineId, value) => {
+    setSelectedBodyParts(prev => ({
+      ...prev,
+      [routineId]: value
+    }));
+  };
 
   return (
     <div className="lg:flex flex-col items-center justify-center w-full h-full">
@@ -191,46 +304,57 @@ export default function RoutinePage() {
           </h1>
         </div>
         <div className="flex">
-          <div className="text-neutral-200 flex flex-col w-full" >
+          <div className="text-neutral-200 flex flex-col w-full">
             <p className="text-xs">This helps us to analyze your data! 👉👈</p>
-            <div className="flex mt-2 items-center gap-2">
-              <form onSubmit={handleAnalysis}>
-              <Select onValueChange={(field) => setChoice(field.value)} defaultValue={'Select'} value={choice}>
-                <SelectTrigger className="w-[110px]">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {muscleArray.map((data) => (
-                    <SelectItem key={data.bodyPart} value={data.bodyPart}>{data.bodyPart}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button type="submit" size="sm" className="border-2 border-white">Submit</Button>
-              </form>
-            <div className="flex justify-end w-full">
-            <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="secondary">
-                <Plus />
-                Add Routine
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-2">
-                <Input
-                  value={routineName}
-                  onChange={(e) => setRoutineName(e.target.value)}
-                  placeholder="Routine Name (e.g. Lower Body)"
-                />
-                <Button onClick={handleCreateRoutine} className="w-full">
-                  Create
+            
+            <div className="flex justify-between items-center mt-2">
+              {/* Category selection and analysis */}
+              <div className="flex gap-2">
+                <Select onValueChange={(value) => setChoice(value)}>
+                  <SelectTrigger className="w-[110px]">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {muscleArray.map((data, index) => (
+                      <SelectItem key={`muscle-${data.bodyPart}-${index}`} value={data.bodyPart}>
+                        {data.bodyPart}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Button 
+                  onClick={() => choice ? handleAnalysis(choice, false) : null} 
+                  size="icon" 
+                  className="border-2 border-white hover:bg-white hover:text-black"
+                  disabled={!choice}
+                >
+                  <PlusIcon/>
                 </Button>
               </div>
-            </PopoverContent>
-          </Popover>
+              
+              {/* Add routine button */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="secondary">
+                    <Plus />
+                    Add Routine
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-2">
+                    <Input
+                      value={routineName}
+                      onChange={(e) => setRoutineName(e.target.value)}
+                      placeholder="Routine Name (e.g. Lower Body)"
+                    />
+                    <Button onClick={handleCreateRoutine} className="w-full">
+                      Create
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
-            </div>
-          
           </div>
         </div>
 
@@ -279,26 +403,34 @@ export default function RoutinePage() {
                         🗑️
                       </Button>
                     </div>
-                    {routineData.details.map((detail, idx) => (
-                      <ul key={detail._id} className="mt-4 space-y-2 bg-white">
+                    {routineData.details.map((detail, detailIdx) => (
+                      <ul key={`detail-${detail._id || detailIdx}`} className="mt-4 space-y-2 bg-white">
                         <span className="text-xl font-bold">
                           📅 {detail.day}
                         </span>
-                        <li key={idx} className="flex items-center justify-between p-2 bg-gray-100 rounded">
+                        <li className="flex items-center justify-between p-2 bg-gray-100 rounded">
                           <div className="flex flex-col items-start justify-start text-neutral-800">
                             <span className="font-semibold">
                               🎯Muscle: <span className="font-medium">{detail.muscle}</span>
                             </span>
                             <span className="font-semibold">
                               🏋️‍♂️Exercise:
-                              <span className="font-medium"> {detail.exercises.map((ex) => ex.exerciseName).join(", ")}</span>
+                              <span className="font-medium"> 
+                                {detail.exercises.map((ex, exIdx) => (
+                                  <span key={`exercise-${exIdx}`}>{ex.exerciseName}{exIdx < detail.exercises.length - 1 ? ", " : ""}</span>
+                                ))}
+                              </span>
                             </span>
                             <span className="font-semibold">
                               ⌛Time:
-                              <span className="font-medium"> {detail.exercises.map((data) => data.exerciseTime)}{' min'}</span>
+                              <span className="font-medium"> 
+                                {detail.exercises.map((data, timeIdx) => (
+                                  <span key={`time-${timeIdx}`}>{data.exerciseTime}</span>
+                                ))}{' min'}
+                              </span>
                             </span>
                           </div>
-                          <GetTimeComponent key={detail.idx} initialTimer={detail.exercises.map((data) => data.exerciseTime * 60)} running={isRunning} />
+                          <GetTimeComponent initialTimer={detail.exercises.map((data) => data.exerciseTime * 60)} running={isRunning} />
                         </li>
                       </ul>
                     ))}

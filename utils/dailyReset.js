@@ -13,12 +13,13 @@ export async function resetDailyActivities() {
         const endOfYesterday = new Date(yesterday);
         endOfYesterday.setHours(23, 59, 59, 999);
 
-        const activities = await DailyActiviy.find({
+        const activities = await DailyActivity.find({
             date: {
                 $gte: yesterday,
                 $lte: endOfYesterday
             }
         });
+        
         for (const activity of activities) {
             await ProgressData.create({
                 date: activity.date,

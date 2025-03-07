@@ -37,8 +37,6 @@ const DailyActivitySchema = new mongoose.Schema({
     },
 });
 
-// Remove duplicate index definition
-// DailyActivitySchema.index({date:1},{unique:true});
 
 // Check if the model exists before creating it
 const DailyActivity = mongoose.models.DailyActivity || mongoose.model('DailyActivity', DailyActivitySchema);

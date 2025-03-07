@@ -167,7 +167,6 @@ export function AppSidebar(props) {
         throw new Error(`Error ${res.status}: ${errorData.message}`);
       }
       
-      const data = await res.json();
       
       setCalories('');
       setExercise('');
@@ -188,42 +187,6 @@ export function AppSidebar(props) {
     }
   };
 
-  // Handle resetting all data
-  const handleReset = async () => {
-    if (isResetting) return; // Prevent multiple clicks
-    
-    setIsResetting(true);
-    try {
-      const res = await fetch('/api/progress-data/activity/reset', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to reset data');
-      }
-      
-      toast({
-        title: "Reset Complete",
-        description: "Your daily targets and progress have been reset.",
-        variant: "default",
-      });
-      
-      // Force clear any cached data and trigger refresh
-      setLatestDailyData(null);
-      setIsDataUpdated(true);
-    } catch (error) {
-      console.error('Error resetting data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to reset data. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   async function getDeviceInfo() {
     await useIsMobile();
@@ -249,8 +212,8 @@ export function AppSidebar(props) {
                 ))}
               </SidebarMenu>
               <SidebarMenu>
-                <div className="w-40 mx-auto flex flex-col gap-2">
-                  <div className='flex mt-20 items-center gap-2 '>
+                <div className="w-44 mx-auto flex flex-col gap-2">
+                  <div className='flex mt-14 items-center gap-2 '>
                     <CalendarCheck size={18} />
                     <div className="font-normal text-sm flex">
                       <div className="flex items-center justify-center">
@@ -311,17 +274,6 @@ export function AppSidebar(props) {
                           </PopoverContent>
                         </Popover>
                         
-                        {/* Add Reset Button */}
-                        <Button 
-                          size="icon" 
-                          variant="ghost" 
-                          onClick={handleReset}
-                          disabled={isResetting || !initialLoadComplete}
-                          className="hover:text-red-500 ml-1"
-                          title="Reset all targets and progress"
-                        >
-                          <RefreshCw size={16} className={isResetting ? "animate-spin" : ""} />
-                        </Button>
                       </div>
                     </div>
                   </div>
