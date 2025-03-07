@@ -143,6 +143,7 @@ const PieComponent = () => {
         <CardHeader className="items-center pb-0">
           <CardTitle className="text-xl">Exercises Done {piChart.emoji}</CardTitle>
           <CardDescription>January - June 2024</CardDescription>
+          {console.log(piExercise?.Arms)}
         </CardHeader>
         <CardContent className="flex-1 pb-0">
           <ChartContainer
@@ -155,7 +156,7 @@ const PieComponent = () => {
                 content={<ChartTooltipContent hideLabel />}
               />
               <Pie
-                data={piExercise.data}
+                data={piExercise?.data}
                 dataKey="exerciseDone"
                 nameKey="bodyPart"
                 innerRadius={60}

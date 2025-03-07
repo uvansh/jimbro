@@ -60,5 +60,9 @@ ProgressSchema.pre('save', function (next) {
     next();
 });
 
-module.exports = mongoose.model('Progress', ProgressSchema);
-module.exports = mongoose.model('ExerciseType', ExerciseTypeSchema);
+// Create models only if they haven't been compiled yet
+const Progress = mongoose.models.Progress || mongoose.model('Progress', ProgressSchema);
+const ExerciseType = mongoose.models.ExerciseType || mongoose.model('ExerciseType', ExerciseTypeSchema);
+
+// Export both models
+export { Progress, ExerciseType };

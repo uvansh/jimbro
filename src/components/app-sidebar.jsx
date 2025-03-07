@@ -1,9 +1,9 @@
 'use client'
 
-import { Calendar, Home, ChefHat, ChartLine, ClipboardList, Settings, BicepsFlexed, LogOutIcon, CalendarCheck } from "lucide-react"
+import { Calendar, Home, ChefHat, ChartLine, ClipboardList, Settings, BicepsFlexed, LogOutIcon, CalendarCheck, RefreshCw } from "lucide-react"
 import Link from 'next/link'
 import { Progress } from '@/components/ui/progress';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Plus } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
@@ -67,44 +67,55 @@ export function AppSidebar(props) {
   const [exercise, setExercise] = useState(''); // Actual exercise time
   const [latestDailyData, setLatestDailyData] = useState(null);
   const [isDataUpdated, setIsDataUpdated] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
-  
-  const fetchProgress = async () => {
-    const res = await fetch('/api/progress-data', { method: 'GET', cache: 'no-store'})
+  // Memoize the fetchProgress function to prevent unnecessary re-renders
+  const fetchProgress = useCallback(async () => {
     try {
+      const res = await fetch('/api/progress-data', { 
+        method: 'GET', 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
+      });
+      
       if (!res.ok) {
         throw new Error(`Error ${res.status}: Failed to fetch progress`);
       }
+      
       const data = await res.json();
-      if (data.length > 0){
-        const latestData = data[data.length - 1];
-        if(!latestDailyData || latestData._id !== latestDailyData._id) {
-          setLatestDailyData(latestData);
-        }
+      
+      if (data && data.length > 0) {
+        // Always use the first item (most recent) as the latest data
+        setLatestDailyData(data[0]);
       } else {
         setLatestDailyData(null);
       }
-      
     } catch (error) {
-      console.error(error);
-    } finally{
+      console.error("Error fetching progress data:", error);
+    } finally {
       setIsDataUpdated(false);
+      setIsResetting(false);
+      setInitialLoadComplete(true);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    console.log("I am fetching data now")
     fetchProgress();
-  }, [isDataUpdated]);
+  }, [fetchProgress, isDataUpdated]);
   
   // Handle adding activity (calories and exercise)
   const handleTargetActivity = async () => {
-
     try {
       const res = await fetch('/api/progress-data/activity/create', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', // Pass token for auth
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
         },
         body: JSON.stringify({
           targetCaloriesIntake: Number(targetCalories) || 0,
@@ -116,30 +127,34 @@ export function AppSidebar(props) {
         const errorData = await res.json();
         throw new Error(`Error ${res.status}: ${errorData.message}`);
       }
-      // console.log('Activity updated:', createdActivity);
+      
       toast({
-        title: "Process Created",
-        description: "Your process has been created successfully.",
+        title: "Target Set",
+        description: "Your daily targets have been set successfully.",
         variant: "default",
       });
+      
       setTargetCalories(''); // Reset inputs
       setTargetExercise('');
-      await fetchProgress();
+      setIsDataUpdated(true); // Trigger data refresh
     } catch (error) {
-      console.error('Failed to add activity:', error);
-    } finally{
-      setIsDataUpdated(true);
+      console.error('Failed to set targets:', error);
+      toast({
+        title: "Error",
+        description: "Failed to set targets. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
   // Handle adding activity (calories and exercise)
   const handleActivityChange = async () => {
-
     try {
       const res = await fetch('/api/progress-data/activity/update', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
         },
         body: JSON.stringify({
           caloriesIntake: Number(calories) || 0,
@@ -147,24 +162,66 @@ export function AppSidebar(props) {
         }),
       });
 
-      const data = await res.json();
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(`Error ${res.status}: ${errorData.message}`);
       }
-      console.log('Activity updated:', data);
+      
+      const data = await res.json();
+      
       setCalories('');
       setExercise('');
-      await fetchProgress();
+      setIsDataUpdated(true); // Trigger data refresh
+      
       toast({
         title: "Activity Updated",
-        description: "Your daily task has been successfully updated.",
+        description: "Your daily activity has been successfully updated.",
         variant: "default",
       });
     } catch (error) {
-      console.error('Failed to add activity:', error);
-    } finally{
+      console.error('Failed to update activity:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update activity. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle resetting all data
+  const handleReset = async () => {
+    if (isResetting) return; // Prevent multiple clicks
+    
+    setIsResetting(true);
+    try {
+      const res = await fetch('/api/progress-data/activity/reset', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to reset data');
+      }
+      
+      toast({
+        title: "Reset Complete",
+        description: "Your daily targets and progress have been reset.",
+        variant: "default",
+      });
+      
+      // Force clear any cached data and trigger refresh
+      setLatestDailyData(null);
       setIsDataUpdated(true);
+    } catch (error) {
+      console.error('Error resetting data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reset data. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -253,6 +310,18 @@ export function AppSidebar(props) {
                             )}
                           </PopoverContent>
                         </Popover>
+                        
+                        {/* Add Reset Button */}
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          onClick={handleReset}
+                          disabled={isResetting || !initialLoadComplete}
+                          className="hover:text-red-500 ml-1"
+                          title="Reset all targets and progress"
+                        >
+                          <RefreshCw size={16} className={isResetting ? "animate-spin" : ""} />
+                        </Button>
                       </div>
                     </div>
                   </div>
